@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Guess Who — Sports Edition</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Teko:wght@500;600;700&family=Share+Tech+Mono&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- Persistent scoreboard header -->
+<header id="topbar">
+  <div id="topbar-brand">GUESS WHO<span class="accent">.</span></div>
+  <div id="topbar-meta">
+    <span id="topbar-theme"></span>
+    <span id="topbar-room"></span>
+  </div>
+</header>
+
+<main id="app">
+
+  <!-- LOBBY SCREEN -->
+  <section class="screen active" id="lobbyScreen" data-theme="">
+    <div class="lobby-card">
+      <h1 class="jersey-title">Guess Who</h1>
+      <p class="lobby-sub">Sports card edition — head to head, live.</p>
+
+      <label class="field-label" for="usernameInput">Your name</label>
+      <input id="usernameInput" class="text-input" type="text" maxlength="16" placeholder="Enter your name" autocomplete="off">
+
+      <div id="hostJoinRow" class="hidden">
+        <button id="showHostBtn" class="btn btn-primary">Host a Game</button>
+        <button id="showJoinBtn" class="btn btn-secondary">Join a Game</button>
+      </div>
+
+      <!-- Host setup: theme picker -->
+      <div id="hostSetup" class="hidden panel">
+        <label class="field-label">Choose your board</label>
+        <div id="themeGrid" class="theme-grid">
+          <button class="theme-tile" data-theme="Champions League">
+            <span class="theme-tile-name">Champions<br>League</span>
+          </button>
+          <button class="theme-tile" data-theme="NBA">
+            <span class="theme-tile-name">NBA</span>
+          </button>
+          <button class="theme-tile" data-theme="World Cup">
+            <span class="theme-tile-name">World<br>Cup</span>
+          </button>
+        </div>
+        <button id="createRoomBtn" class="btn btn-primary" disabled>Create Room</button>
+        <button class="btn btn-ghost back-btn" data-back-to="hostJoinRow">Back</button>
+      </div>
+
+      <!-- Host waiting -->
+      <div id="hostWaiting" class="hidden panel">
+        <p class="field-label">Share this code with your opponent</p>
+        <div id="roomCodeDisplay" class="scoreboard-code"></div>
+        <p class="waiting-msg" id="hostWaitingMsg">Waiting for player 2 to join…</p>
+        <button class="btn btn-ghost back-btn" data-back-to="hostJoinRow">Cancel</button>
+      </div>
+
+      <!-- Join setup -->
+      <div id="joinSetup" class="hidden panel">
+        <label class="field-label" for="roomCodeInput">Room code</label>
+        <input id="roomCodeInput" class="text-input code-input" type="text" maxlength="6" placeholder="000000" autocomplete="off">
+        <button id="joinRoomBtn" class="btn btn-primary">Join Room</button>
+        <button class="btn btn-ghost back-btn" data-back-to="hostJoinRow">Back</button>
+        <p class="waiting-msg" id="joinStatusMsg"></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- GAME BOARD SCREEN -->
+  <section class="screen" id="gameBoardScreen">
+    <div class="board-layout">
+      <aside class="identity-panel">
+        <p class="field-label">Your secret player</p>
+        <div class="identity-card">
+          <img id="myIdentityImg" alt="Your secret player">
+        </div>
+        <p id="turnLabel" class="turn-label"></p>
+        <div id="answerControls" class="answer-controls hidden">
+          <button id="yesButton" class="btn btn-primary">YES</button>
+          <button id="noButton" class="btn btn-secondary">NO</button>
+        </div>
+        <button id="goToAskBtn" class="btn btn-primary hidden">Ask a Question</button>
+        <button id="guessButton" class="btn btn-gold" disabled>Guess Selected Card</button>
+        <button id="homeBtn" class="btn btn-ghost">Leave Game</button>
+      </aside>
+
+      <div class="board-main">
+        <div id="qAtBox" class="question-log"></div>
+        <div id="boardGrid" class="board-grid"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ASK QUESTION SCREEN -->
+  <section class="screen" id="enterGuessScreen">
+    <div class="lobby-card">
+      <h2 class="jersey-title small">Ask Your Question</h2>
+      <div id="qAtBoxAsk" class="question-log"></div>
+      <label class="field-label" for="questionEntry">Type your question</label>
+      <input id="questionEntry" class="text-input" type="text" placeholder="Does your player wear #10?" autocomplete="off">
+      <button id="askButton" class="btn btn-primary">Send Question</button>
+      <button id="askBackButton" class="btn btn-ghost">Back to Board</button>
+    </div>
+  </section>
+
+  <!-- PLAYER EDIT / HIDE SCREEN -->
+  <section class="screen" id="playerEditScreen">
+    <div class="lobby-card">
+      <div class="identity-card large">
+        <img id="editScreenImage" alt="Selected player">
+      </div>
+      <h2 id="editScreenText" class="jersey-title small"></h2>
+      <button id="hideButton" class="btn btn-secondary">HIDE</button>
+      <button id="backButton" class="btn btn-ghost">Back to Board</button>
+    </div>
+  </section>
+
+  <!-- GAME OVER SCREEN -->
+  <section class="screen" id="gameOverScreen">
+    <div class="lobby-card">
+      <h2 id="winLossLabel" class="jersey-title win-loss"></h2>
+      <p class="field-label">Opponent's player was</p>
+      <div class="identity-card large">
+        <img id="revealImg" alt="Opponent's secret player">
+      </div>
+      <p id="revealNameLabel" class="reveal-name"></p>
+      <button id="playAgainBtn" class="btn btn-primary hidden">Play Again</button>
+      <p id="waitingRematchMsg" class="waiting-msg hidden">Waiting for host to start a new round…</p>
+      <button id="homeBtn2" class="btn btn-ghost">Return Home</button>
+    </div>
+  </section>
+
+</main>
+
+<script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
+<script src="players.js"></script>
+<script src="game.js"></script>
+</body>
+</html>
