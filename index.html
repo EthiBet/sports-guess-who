@@ -5,11 +5,12 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Guess Who — Sports Edition</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Teko:wght=500;600;700&family=Share+Tech+Mono&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Teko:wght@500;600;700&family=Share+Tech+Mono&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
+<!-- Persistent scoreboard header -->
 <header id="topbar">
   <div id="topbar-brand">GUESS WHO<span class="accent">.</span></div>
   <div id="topbar-meta">
@@ -20,6 +21,7 @@
 
 <main id="app">
 
+  <!-- LOBBY SCREEN -->
   <section class="screen active" id="lobbyScreen" data-theme="">
     <div class="lobby-card">
       <h1 class="jersey-title">Guess Who</h1>
@@ -33,6 +35,7 @@
         <button id="showJoinBtn" class="btn btn-secondary">Join a Game</button>
       </div>
 
+      <!-- Host setup: theme picker -->
       <div id="hostSetup" class="hidden panel">
         <label class="field-label">Choose your board</label>
         <div id="themeGrid" class="theme-grid">
@@ -50,6 +53,7 @@
         <button class="btn btn-ghost back-btn" data-back-to="hostJoinRow">Back</button>
       </div>
 
+      <!-- Host waiting -->
       <div id="hostWaiting" class="hidden panel">
         <p class="field-label">Share this code with your opponent</p>
         <div id="roomCodeDisplay" class="scoreboard-code"></div>
@@ -57,6 +61,7 @@
         <button class="btn btn-ghost back-btn" data-back-to="hostJoinRow">Cancel</button>
       </div>
 
+      <!-- Join setup -->
       <div id="joinSetup" class="hidden panel">
         <label class="field-label" for="roomCodeInput">Room code</label>
         <input id="roomCodeInput" class="text-input code-input" type="text" maxlength="6" placeholder="000000" autocomplete="off">
@@ -67,6 +72,7 @@
     </div>
   </section>
 
+  <!-- GAME BOARD SCREEN -->
   <section class="screen" id="gameBoardScreen">
     <div class="board-layout">
       <aside class="identity-panel">
@@ -91,6 +97,7 @@
     </div>
   </section>
 
+  <!-- ASK QUESTION SCREEN -->
   <section class="screen" id="enterGuessScreen">
     <div class="lobby-card">
       <h2 class="jersey-title small">Ask Your Question</h2>
@@ -102,6 +109,7 @@
     </div>
   </section>
 
+  <!-- PLAYER EDIT / HIDE SCREEN -->
   <section class="screen" id="playerEditScreen">
     <div class="lobby-card">
       <div class="identity-card large">
@@ -113,6 +121,7 @@
     </div>
   </section>
 
+  <!-- GAME OVER SCREEN -->
   <section class="screen" id="gameOverScreen">
     <div class="lobby-card">
       <h2 id="winLossLabel" class="jersey-title win-loss"></h2>
