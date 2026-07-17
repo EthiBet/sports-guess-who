@@ -14,10 +14,12 @@
   --font-body: 'Inter', sans-serif;
   --font-mono: 'Share Tech Mono', monospace;
 
-  /* Theme background placeholders — swap these for real images later */
-  --bg-champions-league: radial-gradient(circle at 20% 20%, #16324a 0%, #0b1220 70%);
-  --bg-nba: radial-gradient(circle at 80% 20%, #3a1a1a 0%, #0b1220 70%);
-  --bg-world-cup: radial-gradient(circle at 50% 10%, #1a3a2a 0%, #0b1220 70%);
+  /* Theme background images with a dark overlay so cards stay readable */
+  --dark-overlay: linear-gradient(rgba(6, 10, 18, 0.62), rgba(6, 10, 18, 0.72));
+  --bg-default: var(--dark-overlay), url('images/background.jpg');
+  --bg-champions-league: var(--dark-overlay), url('images/championsLeague.jpg');
+  --bg-nba: var(--dark-overlay), url('images/nba.jpg');
+  --bg-world-cup: var(--dark-overlay), url('images/worldCup.jpg');
 }
 
 * { box-sizing: border-box; }
@@ -26,7 +28,7 @@ html, body {
   margin: 0;
   padding: 0;
   min-height: 100vh;
-  background: var(--pitch-black);
+  background-color: var(--pitch-black);
   color: var(--card-cream);
   font-family: var(--font-body);
 }
@@ -80,25 +82,30 @@ button { font-family: var(--font-body); cursor: pointer; }
 .screen.active { display: flex; }
 
 /* Theme backgrounds applied to the lobby screen wrapper */
-#lobbyScreen[data-theme="Champions League"] { background: var(--bg-champions-league); }
-#lobbyScreen[data-theme="NBA"] { background: var(--bg-nba); }
-#lobbyScreen[data-theme="World Cup"] { background: var(--bg-world-cup); }
-#lobbyScreen { background: var(--pitch-black); width: 100%; }
+#lobbyScreen[data-theme="Champions League"] { background-image: var(--bg-champions-league); }
+#lobbyScreen[data-theme="NBA"] { background-image: var(--bg-nba); }
+#lobbyScreen[data-theme="World Cup"] { background-image: var(--bg-world-cup); }
+#lobbyScreen {
+  background-image: var(--bg-default);
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  width: 100%;
+  transition: background-image 0.4s ease;
+}
 
-body[data-active-theme="Champions League"] #gameBoardScreen,
-body[data-active-theme="Champions League"] #enterGuessScreen,
-body[data-active-theme="Champions League"] #playerEditScreen,
-body[data-active-theme="Champions League"] #gameOverScreen { background: var(--bg-champions-league); }
+body {
+  background-image: var(--bg-default);
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  transition: background-image 0.4s ease;
+}
 
-body[data-active-theme="NBA"] #gameBoardScreen,
-body[data-active-theme="NBA"] #enterGuessScreen,
-body[data-active-theme="NBA"] #playerEditScreen,
-body[data-active-theme="NBA"] #gameOverScreen { background: var(--bg-nba); }
-
-body[data-active-theme="World Cup"] #gameBoardScreen,
-body[data-active-theme="World Cup"] #enterGuessScreen,
-body[data-active-theme="World Cup"] #playerEditScreen,
-body[data-active-theme="World Cup"] #gameOverScreen { background: var(--bg-world-cup); }
+body[data-active-theme="Champions League"] { background-image: var(--bg-champions-league); }
+body[data-active-theme="NBA"] { background-image: var(--bg-nba); }
+body[data-active-theme="World Cup"] { background-image: var(--bg-world-cup); }
 
 /* ============ Shared card container ============ */
 .lobby-card {
@@ -240,31 +247,42 @@ body[data-active-theme="World Cup"] #gameOverScreen { background: var(--bg-world
 }
 
 .identity-panel {
-  width: 220px;
+  width: 170px;
   flex-shrink: 0;
   background: rgba(16, 28, 48, 0.9);
   border: 1px solid rgba(212, 175, 55, 0.35);
   border-radius: 10px;
-  padding: 18px;
+  padding: 16px;
   text-align: center;
 }
 
 .identity-card {
   width: 100%;
+  max-width: 140px;
+  margin: 0 auto;
   aspect-ratio: 3/4;
   border-radius: 8px;
   overflow: hidden;
   border: 2px solid var(--trophy-gold);
-  margin-bottom: 10px;
+  margin-bottom: 8px;
+  position: relative;
 }
 .identity-card img { width: 100%; height: 100%; object-fit: cover; }
-.identity-card.large { max-width: 220px; margin: 0 auto 14px; }
+.identity-card.large { max-width: 150px; margin: 0 auto 14px; }
+
+.identity-name {
+  font-family: var(--font-jersey);
+  font-size: 20px;
+  letter-spacing: 0.5px;
+  color: var(--card-cream);
+  margin: 0 0 8px;
+}
 
 .turn-label {
   font-family: var(--font-jersey);
-  font-size: 22px;
+  font-size: 20px;
   color: var(--turf-green-bright);
-  margin: 10px 0;
+  margin: 8px 0;
   letter-spacing: 1px;
 }
 
@@ -274,22 +292,29 @@ body[data-active-theme="World Cup"] #gameOverScreen { background: var(--bg-world
 .board-main { flex: 1; min-width: 0; }
 
 .question-log {
-  background: rgba(0,0,0,0.35);
+  background: rgba(0,0,0,0.4);
   border: 1px solid rgba(212,175,55,0.25);
   border-radius: 8px;
   padding: 12px 16px;
   font-size: 13px;
+  line-height: 1.5;
   color: var(--paper-dim);
   white-space: pre-wrap;
   margin-bottom: 16px;
-  min-height: 20px;
+  height: 190px;
+  overflow-y: auto;
   font-family: var(--font-mono);
+  text-align: left;
 }
+.question-log::-webkit-scrollbar { width: 8px; }
+.question-log::-webkit-scrollbar-thumb { background: rgba(212,175,55,0.4); border-radius: 4px; }
 
 .board-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 10px;
+  gap: 8px;
+  max-width: 460px;
+  margin: 0 auto;
 }
 
 .board-card {
@@ -303,7 +328,19 @@ body[data-active-theme="World Cup"] #gameOverScreen { background: var(--bg-world
 .board-card img { width: 100%; height: 100%; object-fit: cover; }
 .board-card:hover { border-color: var(--trophy-gold); }
 .board-card.selected { border-color: var(--turf-green-bright); box-shadow: 0 0 0 2px var(--turf-green-bright); }
-.board-card.hidden-card img { filter: brightness(0.25); }
+.board-card.hidden-card img { filter: brightness(0.22); }
+
+.hide-overlay {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  padding: 14%;
+  pointer-events: none;
+  display: none;
+}
+.board-card.hidden-card .hide-overlay { display: block; }
 
 .reveal-name { font-family: var(--font-jersey); font-size: 22px; margin: 4px 0 20px; }
 
