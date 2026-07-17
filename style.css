@@ -20,6 +20,8 @@
   --bg-champions-league: var(--dark-overlay), url('images/championsLeague.jpg');
   --bg-nba: var(--dark-overlay), url('images/nba.jpg');
   --bg-world-cup: var(--dark-overlay), url('images/worldCup.jpg');
+
+  --topbar-h: 56px;
 }
 
 * { box-sizing: border-box; }
@@ -27,7 +29,8 @@
 html, body {
   margin: 0;
   padding: 0;
-  min-height: 100vh;
+  height: 100%;
+  overflow: hidden;
   background-color: var(--pitch-black);
   color: var(--card-cream);
   font-family: var(--font-body);
@@ -42,9 +45,11 @@ button { font-family: var(--font-body); cursor: pointer; }
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 14px 28px;
+  height: var(--topbar-h);
+  padding: 0 24px;
   background: var(--pitch-navy);
   border-bottom: 3px solid var(--trophy-gold);
+  flex-shrink: 0;
 }
 
 #topbar-brand {
@@ -68,16 +73,18 @@ button { font-family: var(--font-body); cursor: pointer; }
 
 /* ============ Screens ============ */
 #app {
-  min-height: calc(100vh - 60px);
+  flex: 1;
+  min-height: 0;
   transition: background 0.4s ease;
 }
 
 .screen {
   display: none;
-  min-height: calc(100vh - 60px);
+  height: 100%;
   align-items: center;
   justify-content: center;
-  padding: 32px 16px;
+  padding: 16px;
+  overflow: hidden;
 }
 .screen.active { display: flex; }
 
@@ -91,15 +98,17 @@ button { font-family: var(--font-body); cursor: pointer; }
   background-position: center;
   background-repeat: no-repeat;
   width: 100%;
+  height: 100%;
   transition: background-image 0.4s ease;
 }
 
 body {
+  display: flex;
+  flex-direction: column;
   background-image: var(--bg-default);
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
-  background-attachment: fixed;
   transition: background-image 0.4s ease;
 }
 
@@ -111,10 +120,12 @@ body[data-active-theme="World Cup"] { background-image: var(--bg-world-cup); }
 .lobby-card {
   width: 100%;
   max-width: 420px;
+  max-height: 100%;
+  overflow-y: auto;
   background: rgba(16, 28, 48, 0.88);
   border: 1px solid rgba(212, 175, 55, 0.35);
   border-radius: 10px;
-  padding: 32px 28px;
+  padding: 24px 28px;
   text-align: center;
   backdrop-filter: blur(6px);
 }
@@ -240,68 +251,82 @@ body[data-active-theme="World Cup"] { background-image: var(--bg-world-cup); }
 /* ============ Board screen ============ */
 .board-layout {
   display: flex;
-  gap: 24px;
+  gap: 16px;
   width: 100%;
-  max-width: 980px;
-  align-items: flex-start;
+  max-width: 1000px;
+  height: 100%;
+  align-items: stretch;
 }
 
 .identity-panel {
-  width: 170px;
+  width: 150px;
   flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
   background: rgba(16, 28, 48, 0.9);
   border: 1px solid rgba(212, 175, 55, 0.35);
   border-radius: 10px;
-  padding: 16px;
+  padding: 12px;
   text-align: center;
+  overflow-y: auto;
 }
 
 .identity-card {
   width: 100%;
-  max-width: 140px;
+  max-width: 110px;
   margin: 0 auto;
   aspect-ratio: 3/4;
   border-radius: 8px;
   overflow: hidden;
   border: 2px solid var(--trophy-gold);
-  margin-bottom: 8px;
+  margin-bottom: 6px;
   position: relative;
+  flex-shrink: 0;
 }
 .identity-card img { width: 100%; height: 100%; object-fit: cover; }
-.identity-card.large { max-width: 150px; margin: 0 auto 14px; }
+.identity-card.large { max-width: 130px; margin: 0 auto 12px; }
 
 .identity-name {
   font-family: var(--font-jersey);
-  font-size: 20px;
+  font-size: 18px;
   letter-spacing: 0.5px;
   color: var(--card-cream);
-  margin: 0 0 8px;
+  margin: 0 0 6px;
 }
 
 .turn-label {
   font-family: var(--font-jersey);
-  font-size: 20px;
+  font-size: 17px;
   color: var(--turf-green-bright);
-  margin: 8px 0;
-  letter-spacing: 1px;
+  margin: 6px 0;
+  letter-spacing: 0.5px;
+  line-height: 1.1;
 }
 
-.answer-controls { display: flex; gap: 8px; }
+.answer-controls { display: flex; gap: 6px; }
 .answer-controls .btn { margin-top: 0; }
 
-.board-main { flex: 1; min-width: 0; }
+.identity-panel .btn { padding: 9px 10px; margin-top: 6px; font-size: 13px; }
+
+.board-main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
 
 .question-log {
   background: rgba(0,0,0,0.4);
   border: 1px solid rgba(212,175,55,0.25);
   border-radius: 8px;
-  padding: 12px 16px;
-  font-size: 13px;
-  line-height: 1.5;
+  padding: 10px 14px;
+  font-size: 12px;
+  line-height: 1.4;
   color: var(--paper-dim);
   white-space: pre-wrap;
-  margin-bottom: 16px;
-  height: 190px;
+  margin-bottom: 10px;
+  flex: 0 0 22%;
   overflow-y: auto;
   font-family: var(--font-mono);
   text-align: left;
@@ -312,18 +337,20 @@ body[data-active-theme="World Cup"] { background-image: var(--bg-world-cup); }
 .board-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 8px;
-  max-width: 460px;
-  margin: 0 auto;
+  grid-template-rows: repeat(4, 1fr);
+  gap: 6px;
+  flex: 1;
+  min-height: 0;
 }
 
 .board-card {
-  aspect-ratio: 3/4;
   border-radius: 6px;
   overflow: hidden;
   border: 2px solid rgba(212, 175, 55, 0.25);
   background: #000;
   position: relative;
+  width: 100%;
+  height: 100%;
 }
 .board-card img { width: 100%; height: 100%; object-fit: cover; }
 .board-card:hover { border-color: var(--trophy-gold); }
@@ -346,12 +373,26 @@ body[data-active-theme="World Cup"] { background-image: var(--bg-world-cup); }
 
 /* ============ Responsive ============ */
 @media (max-width: 760px) {
-  .board-layout { flex-direction: column; }
-  .identity-panel { width: 100%; }
-  .identity-card { max-width: 160px; margin: 0 auto 10px; }
-  .board-grid { grid-template-columns: repeat(4, 1fr); }
-  #topbar { padding: 10px 16px; }
-  #topbar-brand { font-size: 22px; }
+  :root { --topbar-h: 44px; }
+  .board-layout { flex-direction: column; gap: 8px; }
+  .identity-panel {
+    width: 100%;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    flex-shrink: 0;
+    padding: 8px 12px;
+  }
+  .identity-card { max-width: 60px; margin: 0; flex-shrink: 0; }
+  .identity-name { font-size: 14px; margin: 0; }
+  .turn-label { font-size: 13px; margin: 0; }
+  .identity-panel .btn { width: auto; padding: 8px 10px; font-size: 12px; }
+  .board-main { flex: 1; min-height: 0; }
+  .question-log { flex-basis: 18%; font-size: 11px; padding: 8px 10px; }
+  .board-grid { gap: 4px; }
+  #topbar { padding: 0 12px; }
+  #topbar-brand { font-size: 20px; }
+  #topbar-meta { font-size: 11px; gap: 10px; }
 }
 
 /* ============ Reduced motion ============ */
