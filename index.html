@@ -25,7 +25,7 @@
   <section class="screen active" id="lobbyScreen" data-theme="">
     <div class="lobby-card">
       <h1 class="jersey-title">Guess Who</h1>
-      <p class="lobby-sub">Sports card edition — head to head, live.</p>
+      <p class="lobby-sub">Sports edition — head to head, live.</p>
 
       <label class="field-label" for="usernameInput">Your name</label>
       <input id="usernameInput" class="text-input" type="text" maxlength="16" placeholder="Enter your name" autocomplete="off">
@@ -69,6 +69,18 @@
         <button class="btn btn-ghost back-btn" data-back-to="hostJoinRow">Back</button>
         <p class="waiting-msg" id="joinStatusMsg"></p>
       </div>
+
+      <button id="showQrBtn" class="btn btn-ghost qr-launch-btn">Open on Another Device (QR Code)</button>
+    </div>
+  </section>
+
+  <!-- QR CODE SCREEN -->
+  <section class="screen" id="qrScreen">
+    <div class="lobby-card">
+      <h2 class="jersey-title small">Scan to Join</h2>
+      <p class="lobby-sub">Open this page on another phone or tablet.</p>
+      <div id="qrcodeContainer" class="qr-box"></div>
+      <button id="qrBackBtn" class="btn btn-ghost">Back to Home</button>
     </div>
   </section>
 
@@ -142,6 +154,7 @@
 </main>
 
 <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
+<script src="https://unpkg.com/qrcodejs@1.0.0/qrcode.min.js"></script>
 <script src="players.js"></script>
 <script src="game.js"></script>
 </body>
