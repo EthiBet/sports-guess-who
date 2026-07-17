@@ -80,13 +80,13 @@
         <div class="identity-card">
           <img id="myIdentityImg" alt="Your secret player">
         </div>
+        <p id="myIdentityName" class="identity-name"></p>
         <p id="turnLabel" class="turn-label"></p>
         <div id="answerControls" class="answer-controls hidden">
           <button id="yesButton" class="btn btn-primary">YES</button>
           <button id="noButton" class="btn btn-secondary">NO</button>
         </div>
         <button id="goToAskBtn" class="btn btn-primary hidden">Ask a Question</button>
-        <button id="guessButton" class="btn btn-gold" disabled>Guess Selected Card</button>
         <button id="homeBtn" class="btn btn-ghost">Leave Game</button>
       </aside>
 
@@ -114,10 +114,13 @@
     <div class="lobby-card">
       <div class="identity-card large">
         <img id="editScreenImage" alt="Selected player">
+        <img id="editScreenHideOverlay" class="hide-overlay hidden" src="images/xOut.png" alt="">
       </div>
       <h2 id="editScreenText" class="jersey-title small"></h2>
       <button id="hideButton" class="btn btn-secondary">HIDE</button>
       <button id="backButton" class="btn btn-ghost">Back to Board</button>
+      <button id="guessButton" class="btn btn-gold hidden">Guess This Player</button>
+      <p id="guessHintMsg" class="waiting-msg hidden">You can only guess on your turn to ask.</p>
     </div>
   </section>
 
