@@ -99,6 +99,23 @@ document.querySelectorAll(".back-btn").forEach(function (btn) {
   });
 });
 
+document.getElementById("showQrBtn").addEventListener("click", function () {
+  var container = document.getElementById("qrcodeContainer");
+  container.innerHTML = "";
+  new QRCode(container, {
+    text: window.location.href,
+    width: 196,
+    height: 196,
+    colorDark: "#101c30",
+    colorLight: "#ffffff"
+  });
+  showScreen("qrScreen");
+});
+
+document.getElementById("qrBackBtn").addEventListener("click", function () {
+  showScreen("lobbyScreen");
+});
+
 // ===================== Theme picker (host only) =====================
 var selectedTheme = "";
 document.querySelectorAll(".theme-tile").forEach(function (tile) {
