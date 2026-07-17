@@ -1,5 +1,6 @@
 // ===================== Global State =====================
 var myUsername = "";
+var opponentName = "";
 var myRole = "";           // "host" | "joiner"
 var roomCode = "";
 var theme = "";
@@ -14,7 +15,7 @@ var hiddenSet = new Set();  // locally hidden card positions (not synced)
 var gameState = {
   turn: "host",
   needsAnswer: false,
-  lastQuestion: "",
+  history: [],       // [{askerRole, question, answererRole, answerText}]
   gameOver: false,
   winner: ""
 };
@@ -62,6 +63,11 @@ function pickBoard(t) {
 
 function otherRole(role) {
   return role === "host" ? "joiner" : "host";
+}
+
+function nameForRole(role) {
+  if (role === myRole) return myUsername || (role === "host" ? "Host" : "Joiner");
+  return opponentName || (role === "host" ? "Host" : "Joiner");
 }
 
 // ===================== Lobby: username & host/join toggle =====================
@@ -210,6 +216,7 @@ function handleIncoming(msg) {
     case "init":
       theme = msg.theme;
       board = msg.board;
+      opponentName = msg.hostName;
       mySecretIndex = Math.floor(Math.random() * 16);
       applyThemeBackground(theme);
       resetGameState();
@@ -219,7 +226,7 @@ function handleIncoming(msg) {
       break;
 
     case "joinerInfo":
-      // Cosmetic only — could be used to label the opponent; no-op for now.
+      opponentName = msg.name;
       break;
 
     case "state":
@@ -253,7 +260,7 @@ function handleIncoming(msg) {
 }
 
 function resetGameState() {
-  gameState = { turn: "host", needsAnswer: false, lastQuestion: "Game started!", gameOver: false, winner: "" };
+  gameState = { turn: "host", needsAnswer: false, history: [], gameOver: false, winner: "" };
   selectedIndex = -1;
   hiddenSet = new Set();
 }
@@ -261,6 +268,7 @@ function resetGameState() {
 // ===================== Board setup & rendering =====================
 function setupBoardUI() {
   document.getElementById("myIdentityImg").src = board[mySecretIndex].img;
+  document.getElementById("myIdentityName").textContent = board[mySecretIndex].name;
   var grid = document.getElementById("boardGrid");
   grid.innerHTML = "";
   board.forEach(function (p, i) {
@@ -271,16 +279,37 @@ function setupBoardUI() {
     img.src = p.img;
     img.alt = p.name;
     card.appendChild(img);
+    var overlay = document.createElement("img");
+    overlay.className = "hide-overlay";
+    overlay.src = "images/xOut.png";
+    overlay.alt = "";
+    card.appendChild(overlay);
     card.addEventListener("click", function () { openCardDetail(i); });
     grid.appendChild(card);
   });
-  document.getElementById("guessButton").disabled = true;
   renderState();
 }
 
 function renderState() {
-  setText("qAtBox", gameState.lastQuestion || "");
+  renderQuestionLog();
   updateUIForTurn();
+}
+
+function renderQuestionLog() {
+  var lines = gameState.history.map(function (r) {
+    var text = nameForRole(r.askerRole) + ": " + r.question;
+    if (r.answerText) {
+      text += "\n" + nameForRole(r.answererRole) + ": " + r.answerText;
+    }
+    return text;
+  });
+  var full = lines.join("\n\n");
+  ["qAtBox", "qAtBoxAsk"].forEach(function (id) {
+    var el = document.getElementById(id);
+    if (!el) return;
+    el.textContent = full;
+    el.scrollTop = el.scrollHeight;
+  });
 }
 
 function setText(id, val) {
@@ -298,6 +327,7 @@ function updateUIForTurn() {
 
   if (gameState.gameOver) {
     setText("turnLabel", "GAME OVER");
+    refreshGuessAvailability();
     return;
   }
 
@@ -316,6 +346,24 @@ function updateUIForTurn() {
       setText("turnLabel", "OPPONENT'S TURN…");
     }
   }
+  refreshGuessAvailability();
+}
+
+function canGuessNow() {
+  return gameState.turn === myRole && !gameState.needsAnswer && !gameState.gameOver;
+}
+
+function refreshGuessAvailability() {
+  if (activeScreen !== "playerEditScreen") return;
+  var guessBtn = document.getElementById("guessButton");
+  var hint = document.getElementById("guessHintMsg");
+  if (canGuessNow()) {
+    guessBtn.classList.remove("hidden");
+    hint.classList.add("hidden");
+  } else {
+    guessBtn.classList.add("hidden");
+    hint.classList.remove("hidden");
+  }
 }
 
 function sendState() {
@@ -328,13 +376,14 @@ function openCardDetail(i) {
   document.querySelectorAll(".board-card").forEach(function (c) { c.classList.remove("selected"); });
   var cardEl = document.querySelector('.board-card[data-index="' + i + '"]');
   if (cardEl) cardEl.classList.add("selected");
-  document.getElementById("guessButton").disabled = false;
 
   var p = board[i];
   document.getElementById("editScreenImage").src = p.img;
   document.getElementById("editScreenText").textContent = p.name;
   document.getElementById("hideButton").textContent = hiddenSet.has(i) ? "UN-HIDE" : "HIDE";
+  document.getElementById("editScreenHideOverlay").classList.toggle("hidden", !hiddenSet.has(i));
   showScreen("playerEditScreen");
+  refreshGuessAvailability();
 }
 
 document.getElementById("hideButton").addEventListener("click", function () {
@@ -343,9 +392,11 @@ document.getElementById("hideButton").addEventListener("click", function () {
   } else {
     hiddenSet.add(selectedIndex);
   }
+  var isHidden = hiddenSet.has(selectedIndex);
   var cardEl = document.querySelector('.board-card[data-index="' + selectedIndex + '"]');
-  if (cardEl) cardEl.classList.toggle("hidden-card", hiddenSet.has(selectedIndex));
-  showScreen("gameBoardScreen");
+  if (cardEl) cardEl.classList.toggle("hidden-card", isHidden);
+  document.getElementById("hideButton").textContent = isHidden ? "UN-HIDE" : "HIDE";
+  document.getElementById("editScreenHideOverlay").classList.toggle("hidden", !isHidden);
 });
 
 document.getElementById("backButton").addEventListener("click", function () {
@@ -354,7 +405,7 @@ document.getElementById("backButton").addEventListener("click", function () {
 
 // ===================== Ask / Answer flow =====================
 document.getElementById("goToAskBtn").addEventListener("click", function () {
-  setText("qAtBoxAsk", gameState.lastQuestion || "");
+  renderQuestionLog();
   document.getElementById("questionEntry").value = "";
   showScreen("enterGuessScreen");
 });
@@ -366,7 +417,12 @@ document.getElementById("askBackButton").addEventListener("click", function () {
 document.getElementById("askButton").addEventListener("click", function () {
   var q = document.getElementById("questionEntry").value.trim();
   if (q === "") return;
-  gameState.lastQuestion = (myUsername || myRole.toUpperCase()) + ": " + q;
+  gameState.history.push({
+    askerRole: myRole,
+    question: q,
+    answererRole: otherRole(myRole),
+    answerText: null
+  });
   gameState.turn = otherRole(myRole);
   gameState.needsAnswer = true;
   sendState();
@@ -378,7 +434,8 @@ document.getElementById("yesButton").addEventListener("click", function () { ans
 document.getElementById("noButton").addEventListener("click", function () { answerQuestion("NO"); });
 
 function answerQuestion(ans) {
-  gameState.lastQuestion = gameState.lastQuestion + "  →  " + ans;
+  var last = gameState.history[gameState.history.length - 1];
+  if (last) last.answerText = ans;
   gameState.needsAnswer = false;
   sendState();
   renderState();
@@ -386,7 +443,7 @@ function answerQuestion(ans) {
 
 // ===================== Guessing =====================
 document.getElementById("guessButton").addEventListener("click", function () {
-  if (selectedIndex === -1 || gameState.gameOver) return;
+  if (selectedIndex === -1 || !canGuessNow()) return;
   conn.send({
     type: "guess",
     guesserSecretIndex: mySecretIndex,
