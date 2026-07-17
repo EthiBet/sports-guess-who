@@ -248,6 +248,25 @@ body[data-active-theme="World Cup"] { background-image: var(--bg-world-cup); }
 
 .waiting-msg { color: var(--paper-dim); font-size: 13px; margin-top: 14px; }
 
+.qr-launch-btn {
+  margin-top: 22px;
+  padding-top: 14px;
+  border-top: 1px solid rgba(212, 175, 55, 0.2);
+}
+
+.qr-box {
+  width: 220px;
+  height: 220px;
+  margin: 10px auto 18px;
+  background: #fff;
+  border-radius: 8px;
+  padding: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.qr-box img, .qr-box canvas { width: 100% !important; height: 100% !important; }
+
 /* ============ Board screen ============ */
 .board-layout {
   display: flex;
